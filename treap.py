@@ -1,103 +1,81 @@
 #!/usr/bin/env python3
-"""treap - Randomized treap (tree + heap) data structure."""
+"""Treap — randomized BST with heap property."""
 import sys, random
 
 class TreapNode:
-    def __init__(self, key, priority=None):
+    __slots__ = ('key','priority','left','right','size')
+    def __init__(self, key):
         self.key = key
-        self.priority = priority if priority is not None else random.random()
-        self.left = None
-        self.right = None
+        self.priority = random.random()
+        self.left = self.right = None
         self.size = 1
 
-def _size(node):
-    return node.size if node else 0
+def _size(n): return n.size if n else 0
+def _update(n):
+    if n: n.size = 1 + _size(n.left) + _size(n.right)
 
-def _update(node):
-    if node:
-        node.size = 1 + _size(node.left) + _size(node.right)
-
-def _rotate_right(node):
-    left = node.left
-    node.left = left.right
-    left.right = node
-    _update(node)
-    _update(left)
-    return left
-
-def _rotate_left(node):
-    right = node.right
-    node.right = right.left
-    right.left = node
-    _update(node)
-    _update(right)
-    return right
-
-def insert(root, key):
-    if not root:
-        return TreapNode(key)
-    if key < root.key:
-        root.left = insert(root.left, key)
-        if root.left.priority > root.priority:
-            root = _rotate_right(root)
-    elif key > root.key:
-        root.right = insert(root.right, key)
-        if root.right.priority > root.priority:
-            root = _rotate_left(root)
-    _update(root)
-    return root
-
-def search(root, key):
-    if not root:
-        return False
-    if key == root.key:
-        return True
-    if key < root.key:
-        return search(root.left, key)
-    return search(root.right, key)
-
-def delete(root, key):
-    if not root:
-        return None
-    if key < root.key:
-        root.left = delete(root.left, key)
-    elif key > root.key:
-        root.right = delete(root.right, key)
+def split(node, key):
+    if not node: return None, None
+    if node.key <= key:
+        node.right, right = split(node.right, key)
+        _update(node)
+        return node, right
     else:
-        if not root.left:
-            return root.right
-        if not root.right:
-            return root.left
-        if root.left.priority > root.right.priority:
-            root = _rotate_right(root)
-            root.right = delete(root.right, key)
-        else:
-            root = _rotate_left(root)
-            root.left = delete(root.left, key)
-    _update(root)
-    return root
+        left, node.left = split(node.left, key)
+        _update(node)
+        return left, node
 
-def inorder(root):
-    if not root:
-        return []
-    return inorder(root.left) + [root.key] + inorder(root.right)
+def merge(left, right):
+    if not left: return right
+    if not right: return left
+    if left.priority > right.priority:
+        left.right = merge(left.right, right)
+        _update(left)
+        return left
+    else:
+        right.left = merge(left, right.left)
+        _update(right)
+        return right
+
+class Treap:
+    def __init__(self):
+        self.root = None
+    def insert(self, key):
+        l, r = split(self.root, key - 0.5)
+        self.root = merge(merge(l, TreapNode(key)), r)
+    def delete(self, key):
+        l, mr = split(self.root, key - 0.5)
+        _, r = split(mr, key)
+        self.root = merge(l, r)
+    def __contains__(self, key):
+        n = self.root
+        while n:
+            if key == n.key: return True
+            n = n.left if key < n.key else n.right
+        return False
+    def __len__(self):
+        return _size(self.root)
+    def inorder(self):
+        result = []
+        def _io(n):
+            if not n: return
+            _io(n.left); result.append(n.key); _io(n.right)
+        _io(self.root)
+        return result
 
 def test():
-    random.seed(42)
-    root = None
-    for x in [5, 3, 7, 1, 9, 2, 8, 4, 6]:
-        root = insert(root, x)
-    assert _size(root) == 9
-    assert inorder(root) == [1, 2, 3, 4, 5, 6, 7, 8, 9]
-    assert search(root, 5) and not search(root, 99)
-    root = delete(root, 5)
-    assert not search(root, 5)
-    assert _size(root) == 8
-    assert inorder(root) == [1, 2, 3, 4, 6, 7, 8, 9]
-    print("OK: treap")
+    t = Treap()
+    for x in [5,3,7,1,4,6,8,2]:
+        t.insert(x)
+    assert len(t) == 8
+    assert 5 in t
+    assert 9 not in t
+    assert t.inorder() == [1,2,3,4,5,6,7,8]
+    t.delete(3)
+    assert 3 not in t
+    assert len(t) == 7
+    print("  treap: ALL TESTS PASSED")
 
 if __name__ == "__main__":
-    if len(sys.argv) > 1 and sys.argv[1] == "test":
-        test()
-    else:
-        print("Usage: treap.py test")
+    if len(sys.argv) > 1 and sys.argv[1] == "test": test()
+    else: print("Treap — randomized BST")

@@ -1,11 +1,10 @@
 # treap
 
-Randomized treap (tree + heap) data structure.
+Single-file Python CLI. Zero dependencies.
 
 ## Usage
 
 ```bash
+python3 treap.py
 python3 treap.py test
 ```
-
-Zero dependencies. Python 3.8+.
