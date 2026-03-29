@@ -1,9 +1,11 @@
-# treap-ds
+# treap
 
-Treap (tree + heap) data structure. Zero-dependency, single-file Python CLI.
+treap - Randomized treap (tree + heap) with split/merge.
+
+Zero-dependency, single-file Python CLI.
 
 ## Usage
 
 ```bash
-python3 treap.py --help
+python3 treap.py
 ```
