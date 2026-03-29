@@ -1,9 +1,11 @@
 # treap
 
-Randomized BST (treap) with split/merge, kth element, rank queries
+Randomized treap (tree + heap) data structure.
+
+## Usage
 
 ```bash
 python3 treap.py test
 ```
 
-Zero deps. Python 3.8+.
+Zero dependencies. Python 3.8+.
