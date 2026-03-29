@@ -1,11 +1,9 @@
 # treap
 
-treap - Randomized treap (tree + heap) with split/merge.
-
-Zero-dependency, single-file Python CLI.
-
-## Usage
+Randomized BST (treap) with split/merge, kth element, rank queries
 
 ```bash
-python3 treap.py
+python3 treap.py test
 ```
+
+Zero deps. Python 3.8+.
