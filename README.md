@@ -1,11 +1,13 @@
 # treap
 
-Randomized binary search tree (treap).""".
-
-Zero dependencies. Python 3.8+.
+Treap (Tree + Heap) Data Structure. Zero-dependency, single-file Python CLI.
 
 ## Usage
 
 ```bash
 python3 treap.py --help
 ```
+
+## License
+
+MIT
